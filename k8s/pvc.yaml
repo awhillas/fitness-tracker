@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fitness-tracker-data
+  namespace: fitness
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  # Set to "manual" to bind to pv.yaml above, or to your cluster's
+  # local-path StorageClass (e.g. standard, rancher.io/local-path).
+  storageClassName: manual
+  volumeName: fitness-tracker-data

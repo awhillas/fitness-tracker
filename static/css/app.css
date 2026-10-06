@@ -1,0 +1,66 @@
+main.container {
+  padding-bottom: 2rem;
+}
+
+.chart-svg {
+  width: 100%;
+  height: auto;
+  max-width: 720px;
+}
+
+.bar {
+  fill: var(--pico-primary);
+}
+
+.bar.missing {
+  fill: var(--pico-secondary);
+  opacity: 0.4;
+}
+
+.axis text,
+.axis line,
+.axis path {
+  fill: var(--pico-muted-color);
+  stroke: var(--pico-muted-color);
+  font-size: 12px;
+}
+
+.axis-label,
+.value {
+  fill: var(--pico-color);
+  font-size: 12px;
+}
+
+.value {
+  fill: var(--pico-muted-color);
+}
+
+.error-bar {
+  stroke: var(--pico-color);
+  stroke-width: 1.5;
+}
+
+.actions a {
+  margin-right: 0.75rem;
+}
+
+.error {
+  color: var(--pico-del-color);
+}
+
+.success {
+  color: var(--pico-success-color);
+}
+
+.muted {
+  color: var(--pico-muted-color);
+}
+
+.pagination a {
+  margin-right: 1rem;
+}
+
+form.inline {
+  display: inline;
+  margin: 0;
+}

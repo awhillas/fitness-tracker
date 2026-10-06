@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <article>
+    <h1>{{ status }}</h1>
+    <p>{{ detail }}</p>
+    {% if user %}
+      <p><a href="/">Back to home</a></p>
+    {% endif %}
+  </article>
+{% endblock %}

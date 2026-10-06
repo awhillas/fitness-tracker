@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{{ app_name }}{% endblock %}</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/icons8-gym-windows-11-outline-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/icons8-gym-windows-11-outline-32.png" />
+    <link rel="apple-touch-icon" href="/static/favicons/icons8-gym-windows-11-outline-96.png" />
+    <link rel="stylesheet" href="/static/vendor/pico.min.css" />
+    <link rel="stylesheet" href="/static/css/app.css" />
+    <script src="/static/vendor/htmx.min.js" defer></script>
+    <script src="/static/vendor/d3.min.js" defer></script>
+    <script src="/static/js/charts.js" defer></script>
+  </head>
+  <body>
+    {% if user %}
+      <nav class="container">
+        <ul>
+          <li><strong>{{ app_name }}</strong></li>
+        </ul>
+        <ul>
+          <li><a href="/" class="{{ 'active' if request.path == '/' else '' }}">Home</a></li>
+          <li><a href="/weighings" class="{{ 'active' if request.path.startswith('/weighings') else '' }}">Weighings</a></li>
+          <li><a href="/weighings/new">Add weight</a></li>
+          <li>
+            <form method="post" action="/logout" class="inline">
+              <button type="submit" class="secondary contrast">Log out ({{ user }})</button>
+            </form>
+          </li>
+        </ul>
+      </nav>
+    {% endif %}
+
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

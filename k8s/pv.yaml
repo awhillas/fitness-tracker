@@ -1,0 +1,27 @@
+# Local-disk PersistentVolume for the SQLite file.
+# Edit `path` and the hostname to match your node, or delete this file and use
+# a local-path StorageClass (e.g. kind, k3s, minikube) with storageClassName set
+# in pvc.yaml.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: fitness-tracker-data
+  labels:
+    app: fitness-tracker
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: manual
+  volumeMode: Filesystem
+  local:
+    path: /var/lib/fitness-tracker/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - my-node

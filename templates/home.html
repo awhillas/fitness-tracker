@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Home &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Home</h1>
+    <p>
+      Last recorded:
+      <strong>{% if last is not none %}{{ last|kg }} kg{% else %}no weighings yet{% endif %}</strong>
+      &nbsp;
+      <a href="/weighings/new" role="button">Record a new weight</a>
+    </p>
+
+    <section>
+      <h2>Last {{ daily|length }} days</h2>
+      <div class="chart" id="daily-chart" data-chart="daily" data-series='{{ daily | tojson }}'></div>
+    </section>
+
+    <section>
+      <h2>Last {{ weekly|length }} weeks (mean &plusmn; std dev)</h2>
+      <div class="chart" id="weekly-chart" data-chart="weekly" data-series='{{ weekly | tojson }}'></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Year week</th>
+            <th>Mean (kg)</th>
+            <th>Std dev (kg)</th>
+            <th>Measurements</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for w in weekly %}
+            <tr>
+              <td>{{ w.label }}</td>
+              <td>{{ w.mean|kg }}</td>
+              <td>{{ w.std|kg }}</td>
+              <td>{{ w.count }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </article>
+{% endblock %}
