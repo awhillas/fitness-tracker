@@ -63,6 +63,7 @@ All configuration is read from environment variables in `app/config.py`.
 | `WEEKLY_WEEKS` | `8` | weekly chart window |
 | `LOCALE` | `en_AU` | Babel locale used for localized dates |
 | `DATE_FORMAT` | `dd-MM-yyyy` | Babel date pattern; displays as `DD-MM-YYYY` |
+| `TIMEZONE` | `Pacific/Auckland` | IANA zone that defines "today" for form defaults, chart windows and the eating report |
 | `OBSCURA_CDP_URL` | `ws://127.0.0.1:3000/devtools/browser` | Obscura CDP endpoint for product imports |
 
 ## Application layout
@@ -87,8 +88,8 @@ The repeatable USDA seed importer is `app/eating/v1/import_usda.py`.
 | `POST` | `/logout` | clears session, redirects to `/login` |
 | `GET` | `/` | home page with daily and weekly charts |
 | `GET` | `/weighings` | paged list, most recent first; htmx requests get the table partial only |
-| `GET` | `/weighings/new` | add form, prefilled with today and the last recorded weight |
-| `POST` | `/weighings` | create weighing, `303` to list; `400` with error partial on invalid input |
+| `GET` | `/weighings/new` | add form, prefilled with today (in `TIMEZONE`) and the most recent weighing's weight |
+| `POST` | `/weighings` | create weighing, `303` to `/` (htmx: `204` with `HX-Redirect: /`); `400` with error partial on invalid input |
 | `GET` | `/weighings/{id}/edit` | htmx inline edit partial |
 | `PUT` | `/weighings/{id}` | update weighing |
 | `DELETE` | `/weighings/{id}` | delete weighing, `204` |
@@ -117,7 +118,7 @@ to grams, energy to kcal, and all table nutrients are retained for the detail pa
 
 ### Daily chart
 
-- Last `DAILY_DAYS` days, oldest on the left.
+- Last `DAILY_DAYS` days ending today in `TIMEZONE`, oldest on the left.
 - One vertical bar per day, height is the mean weight for that day.
 - Days with no weighing render a faded placeholder bar and are skipped for the
   error bar.

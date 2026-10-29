@@ -1,6 +1,7 @@
 from datetime import date
 
 from app import config
+from app.dates import today as app_today
 from app.db import connect
 
 
@@ -15,7 +16,7 @@ def login(client):
 def test_login_and_add_weighing(client):
     """A signed-in user can add a weighing and see it in the list and form defaults."""
     assert login(client).status_code == 200
-    today = date.today()
+    today = app_today()
 
     response = client.post(
         "/weighings",
@@ -23,6 +24,7 @@ def test_login_and_add_weighing(client):
         follow_redirects=False,
     )
     assert response.status_code == 303
+    assert response.headers["location"] == "/"
 
     response = client.get("/weighings")
     assert "72.5" in response.text
@@ -38,6 +40,31 @@ def test_login_and_add_weighing(client):
     assert 'lang="en-AU"' in response.text
     assert f'value="{today.isoformat()}"' in response.text
     assert 'value="72.5"' in response.text
+
+
+def test_htmx_add_weighing_redirects_home(client):
+    """A successful htmx submission tells the browser to go back to the home page."""
+    login(client)
+    response = client.post(
+        "/weighings",
+        data={"date_value": "01-01-2026", "weight_kg": "70.0"},
+        headers={"HX-Request": "true"},
+    )
+    assert response.status_code == 204
+    assert response.headers["HX-Redirect"] == "/"
+
+
+def test_new_weighing_defaults_to_app_today_and_last_weight(client, monkeypatch):
+    """The form uses today's date in the app timezone and the latest recorded weight."""
+    login(client)
+    client.post("/weighings", data={"date_value": "01-01-2026", "weight_kg": "70.0"})
+    client.post("/weighings", data={"date_value": "05-01-2026", "weight_kg": "71.4"})
+    client.post("/weighings", data={"date_value": "03-01-2026", "weight_kg": "69.0"})
+    monkeypatch.setattr("app.weightings.v1.routes.today", lambda: date(2026, 1, 6))
+
+    response = client.get("/weighings/new")
+    assert 'value="2026-01-06"' in response.text
+    assert 'value="71.4"' in response.text
 
 
 def test_add_weighing_rejects_bad_weight(client):

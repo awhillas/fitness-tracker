@@ -1,9 +1,8 @@
-from datetime import date
-
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse, Response
 
 from app import config
+from app.dates import today
 from app.db import get_db
 from app.dependencies import is_htmx, templates
 from app.security.v1.services import require_user
@@ -68,7 +67,7 @@ def new_weighing(
         "add_weight.html",
         {
             "user": user,
-            "today": date.today().isoformat(),
+            "today": today().isoformat(),
             "weight": last_weight(session),
             "result": None,
         },
@@ -84,7 +83,7 @@ def create_weighing_route(
     user=Depends(require_user),
 ):
     try:
-        day, weight = create_weighing(session, date_value, weight_kg)
+        create_weighing(session, date_value, weight_kg)
     except ValidationError as exc:
         if is_htmx(request):
             return templates.TemplateResponse(
@@ -107,12 +106,8 @@ def create_weighing_route(
         )
 
     if is_htmx(request):
-        return templates.TemplateResponse(
-            request,
-            "partials/add_result.html",
-            {"user": user, "error": None, "date": day, "weight_kg": weight},
-        )
-    return RedirectResponse("/weighings", status_code=303)
+        return Response(status_code=204, headers={"HX-Redirect": "/"})
+    return RedirectResponse("/", status_code=303)
 
 
 @router.get("/weighings/{weighing_id}/edit")

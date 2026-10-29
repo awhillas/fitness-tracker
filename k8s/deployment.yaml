@@ -33,6 +33,8 @@ spec:
           env:
             - name: DB_PATH
               value: /data/fitness.db
+            - name: TIMEZONE
+              value: Pacific/Auckland
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:

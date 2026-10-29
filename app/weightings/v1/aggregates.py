@@ -5,6 +5,7 @@ from statistics import mean, stdev
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.dates import today as current_date
 from app.weightings.v1.schema import Weighing
 from app.weightings.v1.types import DailySeriesItem, WeeklySeriesItem
 
@@ -17,7 +18,7 @@ def iso_week(day: date) -> tuple[int, int]:
 def daily_series(
     session: Session, days: int = 7, today: date | None = None
 ) -> list[DailySeriesItem]:
-    today = today or date.today()
+    today = today or current_date()
     start = today - timedelta(days=days - 1)
     rows = session.execute(
         select(Weighing.date, Weighing.weight_kg)
@@ -46,7 +47,7 @@ def daily_series(
 def weekly_series(
     session: Session, weeks: int = 8, today: date | None = None
 ) -> list[WeeklySeriesItem]:
-    today = today or date.today()
+    today = today or current_date()
     rows = session.execute(select(Weighing.date, Weighing.weight_kg)).all()
 
     buckets: dict[tuple[int, int], list[float]] = defaultdict(list)

@@ -7,7 +7,8 @@
   - daily bars for the last 7 days,
   - horizontal weekly bars for the last 8 ISO weeks, labelled `YYYY-Www`, with
     mean and sample standard deviation error bars.
-- Add weighing form, prefilled with today's date and the last recorded weight.
+- Add weighing form, prefilled with today's date (in the configured `TIMEZONE`)
+  and the last recorded weight; saving returns to the home page.
 - Weighings list, paged at 30 per page, most recent first.
 - Inline edit and delete of a single weighing through htmx partials.
 - Native HTML5 date pickers marked `en-AU`; controls submit ISO dates, while

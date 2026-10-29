@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     weekly_weeks: int = 8
     locale: str = "en_AU"
     date_format: str = "dd-MM-yyyy"
+    timezone: str = "Pacific/Auckland"
     username: str = "alex"
     password: str = "changeme"
     log_level: str = "INFO"

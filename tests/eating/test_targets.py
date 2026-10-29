@@ -1,5 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from app.dates import today as app_today
 from app.db import connect
 from tests.eating.support import login
 
@@ -7,7 +8,7 @@ from tests.eating.support import login
 def test_target_history_crud_and_effective_dates(client):
     """Target history preserves dated values and selects the target effective on a report day."""
     login(client)
-    today = date.today()
+    today = app_today()
     first_start = today - timedelta(days=8)
     second_start = today - timedelta(days=2)
 
@@ -76,7 +77,7 @@ def test_target_history_crud_and_effective_dates(client):
 def test_target_validation_and_duplicate_start_date(client):
     """Targets require positive amounts and unique start dates for each user."""
     login(client)
-    today = date.today()
+    today = app_today()
     target_data = {
         "start_date": today.isoformat(),
         "kcal_target": "1900",

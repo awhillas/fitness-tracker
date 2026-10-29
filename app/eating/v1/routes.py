@@ -1,10 +1,9 @@
 import json
-from datetime import date
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
-from app.dates import parse_date_input
+from app.dates import parse_date_input, today
 from app.db import get_db
 from app.dependencies import templates
 from app.eating.v1 import scraper, services
@@ -24,7 +23,7 @@ def _target_context(session, username: str, error: str | None = None) -> dict[st
         "user": username,
         "targets": services.list_targets(session, username),
         "error": error,
-        "today": date.today().isoformat(),
+        "today": today().isoformat(),
     }
 
 
@@ -45,9 +44,9 @@ def report(
 ):
     error = None
     try:
-        report_day = parse_date_input(day) if day else date.today()
+        report_day = parse_date_input(day) if day else today()
     except ValueError:
-        report_day = date.today()
+        report_day = today()
         error = "Report date must be a valid date in DD-MM-YYYY format."
     target = services.current_target(session, user, report_day)
     consumed_kcal = 0.0

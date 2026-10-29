@@ -6,7 +6,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.dates import parse_date_input
+from app.dates import parse_date_input, today
 from app.eating.v1.schema import EatingTarget, Food
 from app.eating.v1.types import FoodInput, NutrientDatum, ScrapedProduct, TargetInput
 
@@ -53,7 +53,7 @@ def parse_target(start_date: str, kcal_target: str, protein_target_g: str) -> Ta
 def current_target(
     session: Session, username: str, on_date: date | None = None
 ) -> EatingTarget | None:
-    on_date = on_date or date.today()
+    on_date = on_date or today()
     return session.scalar(
         select(EatingTarget)
         .where(EatingTarget.username == username, EatingTarget.start_date <= on_date.isoformat())

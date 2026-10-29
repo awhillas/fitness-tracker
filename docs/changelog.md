@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-29
+
+- Fixed "today" being computed in the server's UTC clock, which made the add
+  weighing form default to yesterday and the home page's daily chart end a day
+  early for most of the NZ morning. Added a `TIMEZONE` setting (default
+  `Pacific/Auckland`) and a shared `app.dates.today()` used by weighings, charts
+  and the eating report; added the `tzdata` dependency.
+- Recording a weighing now redirects to the home page (`303`, or `HX-Redirect`
+  for htmx submissions) instead of the weighings list.
+
 ## 2026-10-12
 
 - Added Babel locale-aware date formatting with Australian English (`en_AU`) and

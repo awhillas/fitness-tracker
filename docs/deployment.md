@@ -15,6 +15,9 @@ from `pyproject.toml` and are locked in `uv.lock`.
 The SQLite file defaults to `data/fitness.db`; override with `DB_PATH`.
 Date presentation defaults to Australian English (`LOCALE=en_AU`) and
 `DATE_FORMAT=dd-MM-yyyy` (`DD-MM-YYYY`); override these in `.env` if needed.
+`TIMEZONE` (default `Pacific/Auckland`) decides what "today" is, independent of
+the server/container clock (which is usually UTC); it is set in
+`k8s/deployment.yaml` too. Time zone data ships via the `tzdata` package.
 Date forms use native HTML5 pickers marked `en-AU` and submit ISO `YYYY-MM-DD`
 values. Their visual format is determined by the browser; server-side handlers
 also accept `DD-MM-YYYY` values.
