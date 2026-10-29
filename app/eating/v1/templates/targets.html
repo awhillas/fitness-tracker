@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Eating targets &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Daily targets</h1>
+    <p><a href="/eating">Back to eating report</a></p>
+
+    <section>
+      <h2>Add a target</h2>
+      {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+      <form method="post" action="/eating/targets">
+        <label for="start_date">Effective from
+          <input type="date" id="start_date" name="start_date" lang="{{ html_lang }}" value="{{ (form.start_date if form else today)|iso_date }}" required />
+        </label>
+        <label for="kcal_target">Energy target (kcal/day)
+          <input type="number" id="kcal_target" name="kcal_target" min="0.1" step="any" value="{{ form.kcal_target if form else '' }}" required />
+        </label>
+        <label for="protein_target_g">Protein target (g/day)
+          <input type="number" id="protein_target_g" name="protein_target_g" min="0.1" step="any" value="{{ form.protein_target_g if form else '' }}" required />
+        </label>
+        <button type="submit">Save target</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Target history</h2>
+      {% if targets %}
+        <table>
+          <thead>
+            <tr><th>Start date</th><th>Energy</th><th>Protein</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for target in targets %}
+              <tr>
+                <td>{{ target.start_date|date }}</td>
+                <td>{{ target.kcal_target|kg }} kcal/day</td>
+                <td>{{ target.protein_target_g|kg }} g/day</td>
+                <td>
+                  <a href="/eating/targets/{{ target.id }}/edit">Edit</a>
+                  <form method="post" action="/eating/targets/{{ target.id }}/delete" class="inline">
+                    <button type="submit" class="secondary">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No daily targets have been set yet.</p>
+      {% endif %}
+    </section>
+  </article>
+{% endblock %}

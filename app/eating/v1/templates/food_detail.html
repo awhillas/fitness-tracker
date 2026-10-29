@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ food.name }} &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>{{ food.name }}</h1>
+    {% if food.brand %}<p>Brand: {{ food.brand }}</p>{% endif %}
+    <p>{{ food.source_type|title }} · values per 100 {{ food.basis_unit }}</p>
+    {% if food.source_url %}<p><a href="{{ food.source_url }}" target="_blank" rel="noopener">View source record</a></p>{% endif %}
+    <h2>Nutritional information</h2>
+    {% if nutrients %}
+      <table>
+        <thead><tr><th>Nutrient</th><th>Amount per 100 {{ food.basis_unit }}</th></tr></thead>
+        <tbody>
+          {% for key, datum in nutrients.items() %}
+            <tr>
+              <th scope="row">{{ key.replace('_', ' ')|title }}</th>
+              <td>{{ datum.value if datum.value is not none else 'Not stated' }} {{ datum.unit }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No nutrient values have been entered.</p>
+    {% endif %}
+    <p><a href="/eating/foods">Back to foods</a></p>
+  </article>
+{% endblock %}

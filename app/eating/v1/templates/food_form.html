@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Add natural food &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Add a natural food</h1>
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    <p>Nutrient values are stored per 100 g or 100 ml.</p>
+    <form method="post" action="/eating/foods">
+      <label for="name">Food name
+        <input type="text" id="name" name="name" value="{{ food.get('name', '') }}" required />
+      </label>
+      <label for="basis_unit">Nutrition basis
+        <select id="basis_unit" name="basis_unit">
+          <option value="g" {{ 'selected' if food.get('basis_unit', 'g') == 'g' else '' }}>100 g</option>
+          <option value="ml" {{ 'selected' if food.get('basis_unit') == 'ml' else '' }}>100 ml</option>
+        </select>
+      </label>
+      <label for="energy_kcal">Energy (kcal)
+        <input type="number" id="energy_kcal" name="energy_kcal" min="0" step="any" value="{{ food.get('energy_kcal', '') }}" />
+      </label>
+      <label for="protein_g">Protein (g)
+        <input type="number" id="protein_g" name="protein_g" min="0" step="any" value="{{ food.get('protein_g', '') }}" />
+      </label>
+      <label for="total_fat_g">Total fat (g)
+        <input type="number" id="total_fat_g" name="total_fat_g" min="0" step="any" value="{{ food.get('total_fat_g', '') }}" />
+      </label>
+      <label for="saturated_fat_g">Saturated fat (g)
+        <input type="number" id="saturated_fat_g" name="saturated_fat_g" min="0" step="any" value="{{ food.get('saturated_fat_g', '') }}" />
+      </label>
+      <label for="carbohydrate_g">Carbohydrate (g)
+        <input type="number" id="carbohydrate_g" name="carbohydrate_g" min="0" step="any" value="{{ food.get('carbohydrate_g', '') }}" />
+      </label>
+      <label for="sugars_g">Sugars (g)
+        <input type="number" id="sugars_g" name="sugars_g" min="0" step="any" value="{{ food.get('sugars_g', '') }}" />
+      </label>
+      <label for="dietary_fibre_g">Dietary fibre (g)
+        <input type="number" id="dietary_fibre_g" name="dietary_fibre_g" min="0" step="any" value="{{ food.get('dietary_fibre_g', '') }}" />
+      </label>
+      <label for="sodium_g">Sodium (g)
+        <input type="number" id="sodium_g" name="sodium_g" min="0" step="any" value="{{ food.get('sodium_g', '') }}" />
+      </label>
+      <label for="salt_g">Salt (g)
+        <input type="number" id="salt_g" name="salt_g" min="0" step="any" value="{{ food.get('salt_g', '') }}" />
+      </label>
+      <button type="submit">Save food</button>
+      <a href="/eating/foods" class="secondary">Cancel</a>
+    </form>
+  </article>
+{% endblock %}

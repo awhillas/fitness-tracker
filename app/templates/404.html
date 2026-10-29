@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Not found &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>404</h1>
+    <p>{{ detail }}</p>
+    {% if user %}
+      <p><a href="/">Back to home</a></p>
+    {% endif %}
+  </article>
+{% endblock %}

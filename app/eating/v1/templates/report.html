@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Eating report &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Eating report</h1>
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    <form method="get" action="/eating">
+      <label for="day">Report date
+        <input type="date" id="day" name="day" lang="{{ html_lang }}" value="{{ (day_value or day)|iso_date }}" required />
+      </label>
+      <button type="submit">View day</button>
+    </form>
+
+    <section>
+      <h2>Daily targets</h2>
+      {% if target %}
+        <p>Targets in effect from {{ target.start_date|date }}:</p>
+        <ul>
+          <li>Energy: {{ target.kcal_target|kg }} kcal</li>
+          <li>Protein: {{ target.protein_target_g|kg }} g</li>
+        </ul>
+      {% else %}
+        <p>No target is set for this date. <a href="/eating/targets">Set a daily target</a>.</p>
+      {% endif %}
+      <a href="/eating/targets">Manage target history</a>
+    </section>
+
+    <section>
+      <h2>Consumed on {{ day|date }}</h2>
+      <table>
+        <thead>
+          <tr><th>Measure</th><th>Consumed</th><th>Target</th><th>Remaining</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Energy</th>
+            <td>{{ consumed_kcal|kg }} kcal</td>
+            <td>{{ target.kcal_target|kg if target else '—' }}</td>
+            <td>{{ remaining_kcal|kg if target else '—' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Protein</th>
+            <td>{{ consumed_protein_g|kg }} g</td>
+            <td>{{ target.protein_target_g|kg if target else '—' }}</td>
+            <td>{{ remaining_protein_g|kg if target else '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Meal recording is the next step; consumed totals are currently a placeholder.</p>
+    </section>
+
+    <p><a href="/eating/foods">Browse foods and products</a></p>
+  </article>
+{% endblock %}

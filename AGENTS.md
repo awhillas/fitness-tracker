@@ -33,15 +33,50 @@ Dependencies live in `pyproject.toml` (production deps plus the `dev` group) and
 `uv add --group dev <pkg>`, and run scripts with `uv run python`.
 
 ## Layout
-
-- `app/config.py` — all configuration comes from env vars; add new settings here.
-- `app/db.py` — schema, `connect()`, `init_db()`, `get_db()` dependency.
-- `app/aggregates.py` — chart aggregation only; no HTTP concerns.
-- `app/security.py` — login check, session user, `require_user`, `Unauthenticated`.
-- `app/routers/` — one router per area; keep handlers thin.
-- `templates/` — full pages; `templates/partials/` — htmx fragments.
-- `static/vendor/` — vendored third-party assets, do not fetch assets at runtime.
-- `k8s/` — one manifest per object.
+```
+app/
+├── security/             # sub-app
+│   ├── __init__.py       # export only what needs to be imported in main.py
+│   └── v1                # versioning
+│       ├── __init__.py
+│       ├── templates/    # per-sub-app templates, not shared across sub-apps 
+│       |   └── partrials/ # htmx partials for fragments of pages
+│       ├── routes.py     # HTTP routes and handlers, no business logic, very thin
+│       ├── services.py   # business logic, the meat of the app, DB access, etc
+│       ├── schema.py     # DB schema and ORM models
+│       └── types.py      # Pydantic types for request/response validation
+├── weightings/           # sub-app
+│   ├── __init__.py
+│   └── v1
+│       ├── __init__.py
+│       ├── templates/    # per-sub-app templates, not shared across sub-apps 
+│       |   └── partrials/ # htmx partials for fragments of pages
+│       ├── routes.py
+│       ├── services.py
+│       ├── aggregates.py # chart aggregation only; no HTTP concerns.
+│       ├── schema.py
+│       └── types.py
+├── health                # sub-app sort of, not versioned, just a single route
+│   ├── __init__.py
+│   └── routes.py
+├── templates/
+│   ├── base.html         # base template for all pages
+│   ├── error.html        # error page template
+│   ├── 404.html          # 404 page template
+│   └── partials/         # htmx partials for fragments of pages
+├── __init__.py
+├── config.py             # app configuration from env vars using pydantic BaseSettings
+├── dependencies.py       # common code that cuts across sub-apps (e.g. logging, security, templating)
+├── db.py                 # shared connect(), init_db(), get_db() dependency
+├── logging_config.py     # logging config, intergrate with logfire etc
+└──  main.py              # main entry point, imports sub-apps and routers, sets up logging, etc. Keep minimal.
+k8s/                      # Kubernetes manifests for deployment, service, ingress, etc.
+docs/                     # documentation for the app, specs, features, todos, changelog, deployment instructions
+static/                   # static assets (CSS, JS, images, etc.)
+data/                     # SQLite database file and other data files, ignired by git, mounted as a volume in Docker/Kubernetes
+tests/                    # unit and integration tests for the app, organized by sub-apps.
+```
+The general idea is to keep each sub-app self-contained, and organised around the data that they use/relate to with some global stuff at the top level. The `routes.py` files are thin, and delegate to `services.py` for the business logic. The `schema.py` files define the database schema and ORM models, while the `types.py` files define Pydantic types for request/response validation.
 
 ## Conventions
 

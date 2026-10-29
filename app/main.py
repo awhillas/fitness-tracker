@@ -5,32 +5,31 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from app import config, security
-from app.db import init_db
-from app.routers import auth, health, home, weighings
-from app.templating import templates
+from app import config
+from app.dependencies import templates, wants_html
+from app.eating.v1.routes import router as eating_router
+from app.health.routes import router as health_router
+from app.logging_config import configure_logging
+from app.security.v1.routes import router as security_router
+from app.security.v1.services import Unauthenticated, current_user
+from app.weightings.v1.routes import router as weightings_router
+
+configure_logging(config.settings.log_level)
 
 app = FastAPI(
-    title=config.APP_NAME,
-    middleware=[Middleware(SessionMiddleware, secret_key=config.SECRET_KEY)],
+    title=config.settings.app_name,
+    middleware=[Middleware(SessionMiddleware, secret_key=config.settings.secret_key)],
 )
-app.mount("/static", StaticFiles(directory=str(config.STATIC_DIR)), name="static")
+app.mount("/static", StaticFiles(directory=str(config.settings.static_dir)), name="static")
 
-app.include_router(health.router)
-app.include_router(auth.router)
-app.include_router(home.router)
-app.include_router(weighings.router)
-
-init_db()
+app.include_router(health_router)
+app.include_router(security_router)
+app.include_router(weightings_router)
+app.include_router(eating_router)
 
 
-def wants_html(request: Request) -> bool:
-    accept = request.headers.get("accept", "")
-    return "text/html" in accept or accept in ("", "*/*")
-
-
-@app.exception_handler(security.Unauthenticated)
-async def unauthenticated_handler(request: Request, exc: security.Unauthenticated):
+@app.exception_handler(Unauthenticated)
+async def unauthenticated_handler(request: Request, exc: Unauthenticated):
     if request.headers.get("HX-Request") == "true":
         return JSONResponse(
             {"error": "unauthenticated"},
@@ -47,8 +46,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404 and wants_html(request):
         return templates.TemplateResponse(
             request,
-            "error.html",
-            {"user": security.current_user(request), "status": 404, "detail": exc.detail},
+            "404.html",
+            {"user": current_user(request), "status": 404, "detail": exc.detail},
             status_code=404,
         )
     return JSONResponse({"error": exc.detail}, status_code=exc.status_code)

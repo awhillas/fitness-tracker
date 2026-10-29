@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Foods and products &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Foods and products</h1>
+    <p><a href="/eating">Back to eating report</a></p>
+
+    <section>
+      <h2>Import a Woolworths product</h2>
+      <p>Paste a Woolworths NZ product-details URL. The app connects to the configured Obscura CDP server.</p>
+      {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+      <form method="post" action="/eating/foods/import">
+        <label for="source_url">Product URL
+          <input type="url" id="source_url" name="source_url" value="{{ source_url if source_url else '' }}" placeholder="https://www.woolworths.co.nz/shop/product-details/..." required />
+        </label>
+        <button type="submit">Import product</button>
+      </form>
+      <p><a href="/eating/foods/new">Add a natural food</a></p>
+    </section>
+
+    <section>
+      <h2>Food database</h2>
+      <form method="get" action="/eating/foods">
+        <label for="q">Search foods and products
+          <input type="search" id="q" name="q" value="{{ query }}" />
+        </label>
+        <button type="submit">Search</button>
+      </form>
+      {% if foods %}
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Type</th><th>Basis</th><th>Energy</th><th>Protein</th></tr>
+          </thead>
+          <tbody>
+            {% for food in foods %}
+              <tr>
+                <td><a href="/eating/foods/{{ food.id }}">{{ food.name }}</a>{% if food.brand %} <small>({{ food.brand }})</small>{% endif %}</td>
+                <td>{{ food.source_type|title }}</td>
+                <td>per 100 {{ food.basis_unit }}</td>
+                <td>{{ food.energy_kcal|kg if food.energy_kcal is not none else '—' }} kcal</td>
+                <td>{{ food.protein_g|kg if food.protein_g is not none else '—' }} g</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No foods match this search yet.</p>
+      {% endif %}
+    </section>
+  </article>
+{% endblock %}

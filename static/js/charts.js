@@ -29,6 +29,51 @@ function frame(el, height, margin, label) {
   };
 }
 
+function drawHorizontalGrid(g, scale, width, tickCount) {
+  const grid = g
+    .append("g")
+    .attr("class", "grid")
+    .call(d3.axisLeft(scale).ticks(tickCount).tickSize(-width).tickFormat(""));
+  grid.select(".domain").remove();
+  grid
+    .selectAll(".tick line")
+    .attr("stroke-dasharray", "3 4")
+    .attr("stroke-opacity", 0.4)
+    .attr("stroke-width", 0.6);
+}
+
+function thinAxes(g) {
+  g.selectAll(".axis path, .axis line").attr("stroke-width", 0.6);
+}
+
+function displayDate(isoDate, includeYear = true) {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const options = { day: "2-digit", month: "2-digit", timeZone: "UTC" };
+  if (includeYear) options.year = "numeric";
+  return new Intl.DateTimeFormat(document.documentElement.lang || "en-AU", options)
+    .formatToParts(new Date(Date.UTC(year, month - 1, day)))
+    .filter((part) => ["day", "month", "year"].includes(part.type))
+    .map((part) => part.value)
+    .join("-");
+}
+
+function drawWeeklyRowSeparators(g, series, scale, width) {
+  const gap = (scale.step() - scale.bandwidth()) / 2;
+  g.append("g")
+    .attr("class", "grid row-grid")
+    .selectAll("line")
+    .data(series.slice(0, -1))
+    .enter()
+    .append("line")
+    .attr("x1", 0)
+    .attr("x2", width)
+    .attr("y1", (d) => scale(d.label) + scale.bandwidth() + gap)
+    .attr("y2", (d) => scale(d.label) + scale.bandwidth() + gap)
+    .attr("stroke-dasharray", "3 4")
+    .attr("stroke-opacity", 0.4)
+    .attr("stroke-width", 0.6);
+}
+
 function renderDaily(el) {
   const series = seriesOf(el);
   if (!series.some((d) => d.value !== null)) {
@@ -42,9 +87,11 @@ function renderDaily(el) {
   const x = d3.scaleBand().domain(series.map((d) => d.date)).range([0, innerW]).padding(0.25);
   const y = d3.scaleLinear().domain([Math.min(...values) - 1, Math.max(...values) + 1]).range([innerH, 0]).nice();
 
+  drawHorizontalGrid(g, y, innerW, 5);
   g.append("g").attr("class", "axis").attr("transform", `translate(0,${innerH})`)
-    .call(d3.axisBottom(x).tickFormat((d) => d.slice(5)));
+    .call(d3.axisBottom(x).tickFormat((d) => displayDate(d, false)));
   g.append("g").attr("class", "axis").call(d3.axisLeft(y));
+  thinAxes(g);
   g.append("text").attr("class", "axis-label").attr("x", 0).attr("y", -12).text("kg");
 
   const bar = g.selectAll(".bar").data(series).enter().append("g");
@@ -57,7 +104,7 @@ function renderDaily(el) {
     .attr("height", (d) => (d.value === null ? 2 : innerH - y(d.value)))
     .classed("missing", (d) => d.value === null)
     .append("title")
-    .text((d) => `${d.date}: ${d.value === null ? "no measurement" : `${d.value} kg (${d.count} measurement${d.count > 1 ? "s" : ""})`}`);
+    .text((d) => `${displayDate(d.date)}: ${d.value === null ? "no measurement" : `${d.value} kg (${d.count} measurement${d.count > 1 ? "s" : ""})`}`);
 
   bar.append("text")
     .attr("class", "value")
@@ -85,6 +132,8 @@ function renderWeekly(el) {
 
   g.append("g").attr("class", "axis").call(d3.axisBottom(x));
   g.append("g").attr("class", "axis").call(d3.axisLeft(y));
+  thinAxes(g);
+  drawWeeklyRowSeparators(g, series, y, innerW);
   g.append("text").attr("class", "axis-label").attr("x", 0).attr("y", -12).text("kg");
 
   const bar = g.selectAll(".week").data(series).enter().append("g");

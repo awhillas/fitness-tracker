@@ -1,0 +1,12 @@
+services:
+  obscura:
+    image: h4ckf0r0day/obscura:latest
+    command:
+      - serve
+      - -v
+      - -p
+      - "3000"
+      - --stealth
+      - --allow-private-network
+    network_mode: host
+    restart: unless-stopped

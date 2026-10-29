@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Edit target &middot; {{ app_name }}{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Edit daily target</h1>
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    <form method="post" action="/eating/targets/{{ target.id }}/edit">
+      <label for="start_date">Effective from
+        <input type="date" id="start_date" name="start_date" lang="{{ html_lang }}" value="{{ target.start_date|iso_date }}" required />
+      </label>
+      <label for="kcal_target">Energy target (kcal/day)
+        <input type="number" id="kcal_target" name="kcal_target" min="0.1" step="any" value="{{ target.kcal_target }}" required />
+      </label>
+      <label for="protein_target_g">Protein target (g/day)
+        <input type="number" id="protein_target_g" name="protein_target_g" min="0.1" step="any" value="{{ target.protein_target_g }}" required />
+      </label>
+      <button type="submit">Save changes</button>
+      <a href="/eating/targets" class="secondary">Cancel</a>
+    </form>
+  </article>
+{% endblock %}

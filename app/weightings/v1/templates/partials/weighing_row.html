@@ -1,0 +1,8 @@
+<tr id="weighing-{{ w.id }}" hx-swap="outerHTML">
+  <td>{{ w.date|date }}</td>
+  <td>{{ w.weight_kg|kg }}</td>
+  <td class="actions">
+    <a href="/weighings/{{ w.id }}/edit" hx-get="/weighings/{{ w.id }}/edit" hx-target="#weighing-{{ w.id }}" hx-swap="outerHTML">Edit</a>
+    <button type="button" class="secondary contrast" hx-delete="/weighings/{{ w.id }}" hx-confirm="Delete {{ w.date|date }} ({{ w.weight_kg|kg }} kg)?" hx-target="#weighing-{{ w.id }}" hx-swap="outerHTML">Delete</button>
+  </td>
+</tr>

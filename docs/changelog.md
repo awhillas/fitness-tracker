@@ -1,5 +1,46 @@
 # Changelog
 
+## 2026-10-12
+
+- Added Babel locale-aware date formatting with Australian English (`en_AU`) and
+  `DD-MM-YYYY` defaults, applied to displayed dates and daily chart labels while
+  preserving ISO 8601 storage and internal canonical values.
+- Replaced free-text date fields with native HTML5 date pickers marked `en-AU`;
+  they submit ISO dates, and server-side handlers still accept `DD-MM-YYYY`.
+
+## 2026-10-08
+
+- Reorganized the app into `security/v1`, `weightings/v1` and `health` packages;
+  moved feature templates and htmx partials alongside their sub-apps while
+  keeping shared page templates under `app/templates/`.
+- Split weighing data operations from routes, moved the SQLite schema and chart
+  aggregation into the weighing feature, and centralized templates, htmx checks,
+  settings and logging setup.
+- Switched environment configuration to Pydantic Settings and updated the
+  container build to copy the new in-app template layout.
+- Reorganized tests by sub-app and corrected the weekly standard-deviation test
+  so it checks a week containing exactly two readings.
+- Added the `eating` sub-app with user-scoped, effective-dated calorie/protein
+  target CRUD, a date-based intake report scaffold, and food catalog/detail pages.
+- Added natural-food nutrient entry and idempotent Woolworths product imports
+  through Obscura CDP + Playwright; Beautiful Soup parses the allowlisted
+  product-details nutrition table and stores normalized per-100-g/ml nutrients.
+- Added Beautiful Soup and Playwright dependencies, `OBSCURA_CDP_URL`, eating
+  schema initialization, navigation, documentation, and focused eating tests.
+- Added an Obscura-captured Woolworths product-page fixture and regression test;
+  adjusted nutrient label normalization to match the live table labels.
+- Replaced SQLite DDL strings with SQLAlchemy models and introduced Alembic
+  migrations that adopt existing tables, preserving existing weighing data.
+- Removed configuration constant aliases; application code now reads values
+  directly from `config.settings`.
+- Added a restartable Obscura Docker Compose service on local CDP port 3000 and
+  documented the endpoint for product scraping.
+- Exercised the Vitasoy product URL through the Compose CDP server; fixed waiting
+  for hidden nutrition tables and inferred ml basis from liquid pack sizes.
+- Added a USDA FoodData Central Foundation Foods CSV importer for produce,
+  nuts/seeds, eggs, and meat cuts; imported records retain their FDC source links.
+- Thinned chart axis strokes and added dashed horizontal gridlines/separators.
+
 ## 2026-10-06
 
 - Project scaffold: `app/`, `templates/`, `static/`, `docs/`, `k8s/`, `tests/`.

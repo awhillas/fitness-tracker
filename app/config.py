@@ -1,24 +1,26 @@
-import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def env(name: str, default: str) -> str:
-    return os.environ.get(name, default)
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(extra="ignore")
+
+    base_dir: Path = Path(__file__).resolve().parent.parent
+    template_dir: Path = Path(__file__).resolve().parent / "templates"
+    static_dir: Path = Path(__file__).resolve().parent.parent / "static"
+    app_name: str = "Fitness Tracker"
+    secret_key: str = "dev-insecure-secret-change-me"
+    db_path: Path = Path(__file__).resolve().parent.parent / "data" / "fitness.db"
+    page_size: int = 30
+    daily_days: int = 7
+    weekly_weeks: int = 8
+    locale: str = "en_AU"
+    date_format: str = "dd-MM-yyyy"
+    username: str = "alex"
+    password: str = "changeme"
+    log_level: str = "INFO"
+    obscura_cdp_url: str = "ws://127.0.0.1:3000/devtools/browser"
 
 
-APP_NAME = env("APP_NAME", "Fitness Tracker")
-SECRET_KEY = env("SECRET_KEY", "dev-insecure-secret-change-me")
-
-DB_PATH = Path(env("DB_PATH", str(BASE_DIR / "data" / "fitness.db")))
-TEMPLATE_DIR = BASE_DIR / "templates"
-STATIC_DIR = BASE_DIR / "static"
-
-PAGE_SIZE = int(env("PAGE_SIZE", "30"))
-DAILY_DAYS = int(env("DAILY_DAYS", "7"))
-WEEKLY_WEEKS = int(env("WEEKLY_WEEKS", "8"))
-
-# Single hard-coded user for now (see docs/todos.md).
-USERNAME = env("USERNAME", "alex")
-PASSWORD = env("PASSWORD", "changeme")
+settings = Settings()

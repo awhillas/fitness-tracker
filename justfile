@@ -46,6 +46,7 @@ alias i := install
 
 # Run the dev server
 run *args:
+    uv run alembic upgrade head
     uv run uvicorn app.main:app --reload --port 8000 {{ args }}
 
 

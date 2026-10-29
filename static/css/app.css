@@ -17,12 +17,27 @@ main.container {
   opacity: 0.4;
 }
 
-.axis text,
+.axis text {
+  fill: var(--pico-muted-color);
+  font-size: 12px;
+}
+
 .axis line,
 .axis path {
-  fill: var(--pico-muted-color);
   stroke: var(--pico-muted-color);
-  font-size: 12px;
+  stroke-width: 0.75;
+}
+
+.grid line {
+  stroke: var(--pico-muted-color);
+  stroke-dasharray: 3 4;
+  stroke-opacity: 0.4;
+  stroke-width: 0.6;
+}
+
+.grid .tick text,
+.grid .domain {
+  display: none;
 }
 
 .axis-label,
