@@ -94,3 +94,7 @@ The general idea is to keep each sub-app self-contained, and organised around th
 Update `docs/` with every change: `specs.md` for behaviour, `features.md` for
 implemented/not-implemented, `todos.md` for open work, `changelog.md` for dated
 entries, `deployment.md` for run/deploy instructions. `CLAUDE.md` points here.
+
+## Deployment
+
+This is to be deployed using the `../pi_manifests` repo, which contains the Kubernetes manifests for the app. The app is actually deployed on a raspberry pi 5 on the local network from a docker hub image. TO access the deplyment environment `ssh grogu` and use `kubectl` to manage the deployment. On the `grogu` machine the manifiests are in `~/dev/manifiests/`. Never alter files there directly, always make changes in the `../pi_manifests` repo and push then ssh into grogu and pull the changes before applying. Since the target is a `aarch64` architecture, make sure to build the docker image for that architecture using `docker buildx` and push it to docker hub.
